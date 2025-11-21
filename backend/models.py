@@ -11,6 +11,7 @@ class Member(db.Model):
     age = db.Column(db.Integer)
     gender = db.Column(db.String(10))
     goal = db.Column(db.String(255))
+    password = db.Column(db.Text)
 
 class Instructor(db.Model):
     __tablename__ = "instructor"
@@ -20,6 +21,7 @@ class Instructor(db.Model):
     phone = db.Column(db.String(20))
     experience = db.Column(db.Integer)
     about = db.Column(db.Text)
+    password = db.Column(db.Text)
 
 class Classes(db.Model):
     __tablename__ = "classes"

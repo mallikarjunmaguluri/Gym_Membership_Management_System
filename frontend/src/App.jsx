@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Navbar from "./components/Navbar/Navbar";
+import AdminNavbar from "./components/Navbar/AdminNavbar";
+
+import Home from "./components/pages/Home/Home";
+import AdminLogin from "./components/pages/Admin/AdminLogin";
+import AdminHome from "./components/pages/Admin/AdminHome";
+
+import MemberLogin from "./components/pages/Member/MemeberLogin";
+import MemberRegister from "./components/pages/Member/MemberRegister";
+import MemeberHome from "./components/pages/Member/MemberHome";
+import MemberNavbar from "./components/Navbar/MemberNavbar";
+import Logout from "./components/Logout/Logout";
+
+function Layout() {
+  const location = useLocation();
+  const role = localStorage.getItem("role"); // read session
+
+  function getNavbar() {
+    if (role === "admin") return <AdminNavbar />;
+    if (role === "member") return <MemberNavbar />;
+
+    // When not logged in — check by URL
+    const path = location.pathname;
+
+    if (path === "/admin-login") return <Navbar />;
+    if (path === "/members-login" || path === "/register") return <Navbar />;
+
+    return <Navbar />;
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {getNavbar()}
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/logout" element={<Logout />} />
+
+
+        {/* Admin Routes */}
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/admin-home" element={<AdminHome />} />
+
+        {/* Member Routes */}
+        <Route path="/members-login" element={<MemberLogin />} />
+        <Route path="/register" element={<MemberRegister />} />
+        <Route path="/member-home" element={<MemeberHome />} />
+      </Routes>
     </>
-  )
+  );
 }
 
-export default App
+
+
+export default function App() {
+  return (
+    <Router>
+      <Layout />
+    </Router>
+  );
+}
