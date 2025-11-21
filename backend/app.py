@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from models import db, Member, Instructor, Membership, MembershipOptions   
+from models import db, Member, Instructor, Membership, MembershipOptions,Classes  
 import os
 from datetime import date, timedelta
 from dotenv import load_dotenv
@@ -175,7 +175,41 @@ def get_instructors():
     return jsonify(result)
 
 
+@app.route("/classes", methods=["GET"])
+def get_classes():
+    classes_list = Classes.query.all()
+    result = [{
+        "classes_id": cls.classes_id,
+        "instructor_id": cls.instructor_id,
+        "title": cls.title,
+        "class_start_time": str(cls.class_start_time),
+        "class_end_time": str(cls.class_end_time),
+        "no_of_members_allowed": cls.no_of_members_allowed
+    } for cls in classes_list]
+    return jsonify(result)
 
+
+@app.route("/add-class", methods=["POST"])
+def add_class():
+    data = request.get_json()
+
+    # Optional: validate instructor exists
+    instructor = Instructor.query.filter_by(instructor_id=data["instructor_id"]).first()
+    if not instructor:
+        return jsonify({"status": "invalid_instructor"})
+
+    new_class = Classes(
+        instructor_id=data["instructor_id"],
+        title=data["title"],
+        class_start_time=data["class_start_time"],
+        class_end_time=data["class_end_time"],
+        no_of_members_allowed=data["no_of_members_allowed"]
+    )
+
+    db.session.add(new_class)
+    db.session.commit()
+
+    return jsonify({"status": "success"})
 
 
 

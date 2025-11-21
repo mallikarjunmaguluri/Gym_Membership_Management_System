@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import "../MembershipOptions/MembershipOptions.css"; // You can reuse styles or create new CSS for instructors
+import "../MembershipOptions/MembershipOptions.css";
 
 export default function Instructor() {
   const [instructors, setInstructors] = useState([]);
 
-  // Fetch all instructors from backend
   useEffect(() => {
   fetch("http://localhost:5000/instructors")
     .then((res) => res.json())
     .then((data) => {
-      console.log(data); // <-- add this to check what JSON arrives
+      console.log(data); 
       setInstructors(data);
     })
     .catch((err) => console.error(err));
@@ -17,7 +16,7 @@ export default function Instructor() {
 
 
   const handleAddInstructor = () => {
-    window.location.href = "/add-instructor"; // Replace with your add instructor page
+    window.location.href = "/add-instructor"; 
   };
 
   return (

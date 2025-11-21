@@ -16,6 +16,8 @@ import MembershipOptions from "./components/pages/MembershipOptions/MembershipOp
 import AddMembershipOptions from "./components/pages/MembershipOptions/AddMembershipOptions";
 import AddInstructor from "./components/pages/Instructors/AddInstructor";
 import Instructor from "./components/pages/Instructors/instructors";
+import Classes from "./components/pages/Classes/Classes";
+import AddClasses from "./components/pages/Classes/AddClasses";
 
 function Layout() {
   const location = useLocation();
@@ -50,6 +52,8 @@ function Layout() {
         <Route path="/add-membership-options" element={<AddMembershipOptions />} />
         <Route path="/instructors" element={<Instructor />} />
         <Route path="/add-instructor" element={<AddInstructor />} />
+        <Route path="/classes" element={<Classes />} />
+        <Route path="/add-class" element={<AddClasses />} />
 
         {/* Member Routes */}
         <Route path="/members-login" element={<MemberLogin />} />
