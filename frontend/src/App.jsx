@@ -12,6 +12,8 @@ import MemberRegister from "./components/pages/Member/MemberRegister";
 import MemeberHome from "./components/pages/Member/MemberHome";
 import MemberNavbar from "./components/Navbar/MemberNavbar";
 import Logout from "./components/Logout/Logout";
+import MembershipOptions from "./components/pages/MembershipOptions/MembershipOptions";
+import AddMembershipOptions from "./components/pages/MembershipOptions/AddMembershipOptions";
 
 function Layout() {
   const location = useLocation();
@@ -42,6 +44,8 @@ function Layout() {
         {/* Admin Routes */}
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-home" element={<AdminHome />} />
+        <Route path="/MembershipOptions" element={<MembershipOptions />} />
+        <Route path="/add-membership-options" element={<AddMembershipOptions />} />
 
         {/* Member Routes */}
         <Route path="/members-login" element={<MemberLogin />} />

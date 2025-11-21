@@ -9,7 +9,7 @@ export default function AdminNavbar() {
 
       <ul className="nav-links">
         <li><Link to="/admin-home">Admin Home</Link></li>
-        <li><Link to="/memberships">Memberships</Link></li>
+        <li><Link to="/MembershipOptions">Membership Options</Link></li>
         <li><Link to="/instructors">Instructors </Link></li>
         <li><Link to="/classes">Classes </Link></li>
         <li><Link to="/view-membership-enrollments">View Membership Enrollments</Link></li>

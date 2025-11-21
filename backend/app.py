@@ -1,13 +1,15 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from models import db, Member, Instructor, Membership, MembershipOptions     
+from models import db, Member, Instructor, Membership, MembershipOptions   
 import os
+from datetime import date, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
 
 # Database config
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
@@ -85,6 +87,48 @@ def member_login():
         return jsonify({"success": True, "message": "Login success"}), 200
     else:
         return jsonify({"success": False, "message": "Invalid credentials"}), 401
+    
+
+
+
+@app.route("/memberships/options/add", methods=["POST"])
+def add_membership_option():
+    data = request.get_json()
+
+    try:
+        new_option = MembershipOptions(
+            title=data.get("title"),
+            price=data.get("price"),
+            validity_in_days=data.get("validity_in_days")
+        )
+
+        db.session.add(new_option)
+        db.session.commit()
+
+        return jsonify({"message": "Membership option added successfullyr"}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print("DB Error:", e)
+        return jsonify({"error": "Failed to add membership option"}), 500
+
+
+@app.route("/memberships/options", methods=["GET"])
+def get_membership_options():
+    options = MembershipOptions.query.all()
+    result = [{
+        "membershipOption_id": opt.membershipOption_id,
+        "title": opt.title,
+        "price": float(opt.price),
+        "validity_in_days": opt.validity_in_days
+    } for opt in options]
+
+    return jsonify(result)
+
+
+
+
+
 
 
 

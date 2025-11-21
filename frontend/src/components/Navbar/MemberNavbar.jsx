@@ -14,7 +14,6 @@ export default function MemberNavbar() {
         <li><Link to="/classes">View Join or Exit Classes </Link></li>
         <li><Link className="register-btn "  to="/" onClick={() => localStorage.removeItem("role")}>Logout</Link></li>
 
-       
       </ul>
     </nav>
   );
