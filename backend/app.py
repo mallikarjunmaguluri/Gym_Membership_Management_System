@@ -127,6 +127,53 @@ def get_membership_options():
 
 
 
+@app.route("/add-instructor", methods=["POST"])
+def add_instructor():
+    data = request.get_json()
+    
+    email = data["email"]
+    phone = data["phone"]
+
+    # Check duplicate email
+    if Instructor.query.filter_by(email=email).first():
+        return jsonify({"status": "duplicate_email"})
+
+    # Check duplicate phone
+    if Instructor.query.filter_by(phone=phone).first():
+        return jsonify({"status": "duplicate_phone"})
+
+    # Insert into DB
+    new_instructor = Instructor(
+        name=data["name"],
+        email=data["email"],
+        phone=data["phone"],
+        experience=data["experience"],
+        about=data["about"]
+    )
+
+    db.session.add(new_instructor)
+    db.session.commit()
+
+    return jsonify({"status": "success"})
+
+@app.route("/instructors", methods=["GET"])
+def get_instructors():
+    instructors = Instructor.query.all()
+    result = [{
+        "instructor_id": inst.instructor_id,
+        "name": inst.name,
+        "email": inst.email,
+        "phone": inst.phone,
+        "experience": inst.experience,
+        "about": inst.about
+    } for inst in instructors]
+
+    for inst in instructors:
+        print(inst.instructor_id, inst.name)
+        print("hii")
+
+    return jsonify(result)
+
 
 
 

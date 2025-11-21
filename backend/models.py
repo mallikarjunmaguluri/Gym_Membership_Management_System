@@ -18,10 +18,9 @@ class Instructor(db.Model):
     instructor_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
-    phone = db.Column(db.String(20))
+    phone = db.Column(db.String(20),unique=True)
     experience = db.Column(db.Integer)
     about = db.Column(db.Text)
-    password = db.Column(db.Text)
 
 class Classes(db.Model):
     __tablename__ = "classes"
