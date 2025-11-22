@@ -3,6 +3,8 @@ from flask_cors import CORS
 from models import db, Member, Instructor, Membership, MembershipOptions,Classes  
 import os
 from datetime import date, timedelta
+from datetime import datetime, timedelta
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -231,37 +233,6 @@ def add_class():
     return jsonify({"status": "success"})
 
 
-@app.route("/enroll-membership", methods=["POST"])
-def enroll_membership():
-    data = request.get_json()
-    member_id = data.get("member_id")
-    membershipOption_id = data.get("membershipOption_id")
-    start_date = data.get("start_date")
-    end_date = data.get("end_date")
-    card_number = data.get("card_number")
-    card_name = data.get("card_name")
-    expire_date = data.get("expire_date")
-    amount = data.get("amount")
-    status = data.get("status")
-
-    if not all([member_id, membershipOption_id, start_date, end_date, card_number, card_name, expire_date, amount, status]):
-        return jsonify({"status": "error", "message": "Missing fields"}), 400
-
-    new_membership = Membership(
-        member_id=member_id,
-        membershipOption_id=membershipOption_id,
-        start_date=start_date,
-        end_date=end_date,
-        card_number=card_number,
-        card_name=card_name,
-        expire_date=expire_date,
-        amount=amount,
-        status=status
-    )
-    db.session.add(new_membership)
-    db.session.commit()
-
-    return jsonify({"status": "success"})
 
 @app.route("/members/<int:member_id>", methods=["GET"])
 def get_member(member_id):
@@ -308,6 +279,63 @@ def update_member(member_id):
             "goal": member.goal,
         }
     })
+
+
+class Membership(db.Model):
+    __tablename__ = 'memberships_enrolled'
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, nullable=False)
+    membershipOption_id = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Numeric(10,2), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    card_number = db.Column(db.String(20), nullable=False)
+    card_name = db.Column(db.String(100), nullable=False)
+    expire_date = db.Column(db.String(7), nullable=False)
+    status = db.Column(db.String(20), default='Pending')
+
+# ----------------- Route -----------------
+@app.route('/enroll-membership', methods=['POST'])
+def enroll_membership():
+    data = request.json
+    try:
+        member_id = data.get('member_id')
+        membershipOption_id = data.get('membershipOption_id')
+        price = Decimal(str(data.get('price', 0)))
+        validity_in_days = int(data.get('validity_in_days', 0))
+        card_number = data.get('card_number')
+        card_name = data.get('card_name')
+        expire_date = data.get('expire_date')
+        status = data.get('status', 'Pending')
+
+        # Validate required fields
+        if not all([member_id, membershipOption_id, card_number, card_name, expire_date]):
+            return jsonify({'status': 'error', 'message': 'Missing required fields'}), 400
+
+        # Calculate start_date and end_date
+        start_date = datetime.now().date()
+        end_date = start_date + timedelta(days=validity_in_days)
+
+        # Insert into DB
+        new_enrollment = Membership(
+            member_id=member_id,
+            membershipOption_id=membershipOption_id,
+            price=price,
+            start_date=start_date,
+            end_date=end_date,
+            card_number=card_number,
+            card_name=card_name,
+            expire_date=expire_date,
+            status=status
+        )
+        db.session.add(new_enrollment)
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'Membership enrolled successfully!'})
+
+    except Exception as e:
+        print("Error enrolling membership:")
+        return jsonify({'status': 'error', 'message': 'Server error'}), 500
 
 
 if __name__ == "__main__":

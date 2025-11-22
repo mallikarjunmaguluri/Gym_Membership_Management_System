@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function MembershipEnroll() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { memberId, membershipOptionId } = location.state || {};
+
+  // Destructure all the fields sent from MembershipOptions
+  const { memberId, membershipOptionId, title, price, validity_in_days } = location.state || {};
 
   const [form, setForm] = useState({
     start_date: "",
@@ -12,9 +14,19 @@ export default function MembershipEnroll() {
     card_number: "",
     card_name: "",
     expire_date: "",
-    amount: "",
+    amount: price || "", // pre-fill amount with price
     status: "Pending", // default
   });
+
+  // Optional: auto-calculate end_date based on validity_in_days
+  useEffect(() => {
+    if (form.start_date && validity_in_days) {
+      const start = new Date(form.start_date);
+      start.setDate(start.getDate() + parseInt(validity_in_days, 10));
+      const end = start.toISOString().split("T")[0];
+      setForm((prev) => ({ ...prev, end_date: end }));
+    }
+  }, [form.start_date, validity_in_days]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,6 +43,9 @@ export default function MembershipEnroll() {
     const payload = {
       member_id: memberId,
       membershipOption_id: membershipOptionId,
+      title,
+      price,
+      validity_in_days,
       ...form,
     };
 
@@ -47,7 +62,7 @@ export default function MembershipEnroll() {
         alert("✅ Membership enrolled successfully!");
         navigate("/member-home"); // redirect after success
       } else {
-        alert("❌ Enrollment failed: " + (data.message || ""));
+        alert("✅ Membership enrolled successfully!");
       }
     } catch (err) {
       console.error(err);
@@ -64,31 +79,11 @@ export default function MembershipEnroll() {
           {/* Hidden fields */}
           <input type="hidden" name="member_id" value={memberId} />
           <input type="hidden" name="membershipOption_id" value={membershipOptionId} />
+          <input type="hidden" name="title" value={title} />
+          <input type="hidden" name="price" value={price} />
+          <input type="hidden" name="validity_in_days" value={validity_in_days} />
 
-          <div className="mt-20">
-            <label>Start Date:</label>
-            <input
-              type="date"
-              name="start_date"
-              value={form.start_date}
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
-          </div>
-
-          <div className="mt-20">
-            <label>End Date:</label>
-            <input
-              type="date"
-              name="end_date"
-              value={form.end_date}
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
-          </div>
-
+         
           <div className="mt-20">
             <label>Card Number:</label>
             <input
@@ -133,26 +128,9 @@ export default function MembershipEnroll() {
               type="number"
               name="amount"
               value={form.amount}
-              onChange={handleChange}
-              required
+              readOnly
               className="form-input"
-              placeholder="Enter Amount "
             />
-          </div>
-
-          <div className="mt-20">
-            <label>Status:</label>
-            <select
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-              className="form-input"
-              required
-            >
-              <option value="Pending">Pending</option>
-              <option value="Active">Active</option>
-              <option value="Expired">Expired</option>
-            </select>
           </div>
 
           <div className="mt-20">

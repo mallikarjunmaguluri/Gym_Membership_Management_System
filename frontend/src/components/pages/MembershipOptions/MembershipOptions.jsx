@@ -27,15 +27,21 @@ export default function MembershipOptions() {
     window.location.href = "/add-membership-options";
   };
 
-  const handleEnroll = (membershipOptionId) => {
+  const handleEnroll = (membership) => {
     if (!memberId) {
       alert("Member not logged in!");
       return;
     }
 
-    // Navigate to MembershipEnroll page with state
+    // Navigate to MembershipEnroll page with full membership details
     navigate("/membership-enroll", {
-      state: { memberId, membershipOptionId },
+      state: { 
+        memberId,
+        membershipOptionId: membership.membershipOption_id,
+        title: membership.title,
+        price: membership.price,
+        validity_in_days: membership.validity_in_days
+      },
     });
   };
 
@@ -69,7 +75,7 @@ export default function MembershipOptions() {
               {role === "member" && (
                 <button
                   className="card-btn"
-                  onClick={() => handleEnroll(m.membershipOption_id)}
+                  onClick={() => handleEnroll(m)} // pass entire membership object
                 >
                   Enroll
                 </button>
