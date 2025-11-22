@@ -75,6 +75,19 @@ def register_member():
     return jsonify({"status": "success"})
 
 
+# @app.route('/member-login', methods=['POST'])
+# def member_login():
+#     data = request.get_json()
+#     email = data.get("email")
+#     password = data.get("password")
+
+#     member = Member.query.filter_by(email=email, password=password).first()
+
+#     if member:
+#         return jsonify({"success": True, "message": "Login success"}), 200
+#     else:
+#         return jsonify({"success": False, "message": "Invalid credentials"}), 401
+
 @app.route('/member-login', methods=['POST'])
 def member_login():
     data = request.get_json()
@@ -84,9 +97,15 @@ def member_login():
     member = Member.query.filter_by(email=email, password=password).first()
 
     if member:
-        return jsonify({"success": True, "message": "Login success"}), 200
+        # Include member_id in the response
+        return jsonify({
+            "success": True,
+            "message": "Login success",
+            "id": member.member_id   # ✅ send member ID
+        }), 200
     else:
         return jsonify({"success": False, "message": "Invalid credentials"}), 401
+
     
 
 
@@ -211,6 +230,84 @@ def add_class():
 
     return jsonify({"status": "success"})
 
+
+@app.route("/enroll-membership", methods=["POST"])
+def enroll_membership():
+    data = request.get_json()
+    member_id = data.get("member_id")
+    membershipOption_id = data.get("membershipOption_id")
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+    card_number = data.get("card_number")
+    card_name = data.get("card_name")
+    expire_date = data.get("expire_date")
+    amount = data.get("amount")
+    status = data.get("status")
+
+    if not all([member_id, membershipOption_id, start_date, end_date, card_number, card_name, expire_date, amount, status]):
+        return jsonify({"status": "error", "message": "Missing fields"}), 400
+
+    new_membership = Membership(
+        member_id=member_id,
+        membershipOption_id=membershipOption_id,
+        start_date=start_date,
+        end_date=end_date,
+        card_number=card_number,
+        card_name=card_name,
+        expire_date=expire_date,
+        amount=amount,
+        status=status
+    )
+    db.session.add(new_membership)
+    db.session.commit()
+
+    return jsonify({"status": "success"})
+
+@app.route("/members/<int:member_id>", methods=["GET"])
+def get_member(member_id):
+    member = Member.query.filter_by(member_id=member_id).first()
+    if member:
+        return jsonify({
+            "member_id": member.member_id,
+            "name": member.name,
+            "email": member.email,
+            "phone": member.phone,
+            "age": member.age,
+            "gender": member.gender,
+            "goal": member.goal,
+        }), 200
+    else:
+        return jsonify({"error": "Member not found"}), 404
+    
+    
+@app.route("/members/<int:member_id>", methods=["PUT"])
+def update_member(member_id):
+    data = request.get_json()
+    member = Member.query.get(member_id)
+    if not member:
+        return jsonify({"status": "error", "message": "Member not found"}), 404
+
+    # Update fields if provided
+    member.name = data.get("name", member.name)
+    member.phone = data.get("phone", member.phone)
+    member.age = data.get("age", member.age)
+    member.goal = data.get("goal", member.goal)
+    member.email = data.get("email", member.email)
+
+    db.session.commit()
+
+    return jsonify({
+        "status": "success",
+        "message": "Profile updated successfully",
+        "member": {
+            "member_id": member.member_id,
+            "name": member.name,
+            "email": member.email,
+            "phone": member.phone,
+            "age": member.age,
+            "goal": member.goal,
+        }
+    })
 
 
 if __name__ == "__main__":

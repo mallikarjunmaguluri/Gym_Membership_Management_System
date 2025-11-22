@@ -18,6 +18,7 @@ import AddInstructor from "./components/pages/Instructors/AddInstructor";
 import Instructor from "./components/pages/Instructors/instructors";
 import Classes from "./components/pages/Classes/Classes";
 import AddClasses from "./components/pages/Classes/AddClasses";
+import MembershipEnroll from "./components/pages/MembershipOptions/MembershipEnroll";
 
 function Layout() {
   const location = useLocation();
@@ -59,6 +60,8 @@ function Layout() {
         <Route path="/members-login" element={<MemberLogin />} />
         <Route path="/register" element={<MemberRegister />} />
         <Route path="/member-home" element={<MemeberHome />} />
+        <Route path="/membership-enroll" element={<MembershipEnroll />} />
+        <Route path="/update-member" element={< MemeberHome/>} />
       </Routes>
     </>
   );

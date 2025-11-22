@@ -14,7 +14,7 @@ export default function AdminNavbar() {
         <li><Link to="/classes">Classes </Link></li>
         <li><Link to="/view-membership-enrollments">View Membership Enrollments</Link></li>
         <li><Link to="/view-classes-enrollments">View Classes Enrollments </Link></li>
-        <li><Link className="register-btn "  to="/" onClick={() => localStorage.removeItem("role")}>Logout</Link></li>
+        <li><Link className="register-btn "  to="/logout" onClick={() => localStorage.removeItem("role")}>Logout</Link></li>
       </ul>
     </nav>
   );

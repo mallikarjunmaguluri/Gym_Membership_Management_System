@@ -1,13 +1,17 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Logout() {
-  useEffect(() => {
-    // Clear session
-    localStorage.removeItem("role");
+  const navigate = useNavigate();
 
-    // Redirect to home
-    window.location.href = "/";
-  }, []);
+  useEffect(() => {
+    // Clear all session/local storage (optional: you can clear only specific keys)
+    localStorage.clear();      // removes all keys from localStorage
+    sessionStorage.clear();    // removes all keys from sessionStorage
+
+    // Redirect to home page
+    navigate("/");
+  }, [navigate]);
 
   return null; // No UI needed
 }

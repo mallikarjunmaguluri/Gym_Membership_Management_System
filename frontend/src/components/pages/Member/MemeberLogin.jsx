@@ -13,30 +13,34 @@ export default function MemberLogin() {
 
     const data = { email, password };
 
-    try {
-      const res = await fetch("http://127.0.0.1:5000/member-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+   try {
+  const res = await fetch("http://127.0.0.1:5000/member-login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-      const result = await res.json();
+  // Parse JSON response
+  const result = await res.json();
 
-      if (res.status === 200 && result.success === true) {
-        // VALID CREDENTIALS
-        localStorage.setItem("role", "member");
-        navigate("/member-home");
+  if (res.status === 200 && result.success === true) {
+    // VALID CREDENTIALS
 
+    // Store role and member ID in localStorage
+    localStorage.setItem("role", "member");
+    localStorage.setItem("member_id", result.id); // ✅ use result.id
 
-      } else {
-        // INVALID CREDENTIALS
-        setMsg("Invalid Credentials");
-      }
+    // Navigate to member home
+    navigate("/member-home");
+  } else {
+    // INVALID CREDENTIALS
+    setMsg("Invalid Credentials");
+  }
+} catch (error) {
+  console.error("Login error:", error);
+  setMsg("Server Error");
+}
 
-    } catch (error) {
-      console.error("Login error:", error);
-      setMsg("Server Error");
-    }
   };
 
   return (

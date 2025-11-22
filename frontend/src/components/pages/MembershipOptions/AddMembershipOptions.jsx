@@ -66,7 +66,7 @@ export default function AddMembershipOptions({ onClose }) {
           </div>
 
           <div className="mt-20">
-            <label>Price (₹)</label>
+            <label>Price ($)</label>
             <input
               type="number"
               required
